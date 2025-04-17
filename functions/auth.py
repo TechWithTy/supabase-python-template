@@ -1,6 +1,6 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, dict, list
 
-from ._service import SupabaseService
+from .._service import SupabaseService
 
 
 class SupabaseAuthService(SupabaseService):
@@ -10,10 +10,14 @@ class SupabaseAuthService(SupabaseService):
     This class provides methods for user management, authentication,
     and session handling using Supabase Auth.
     """
+    def _configure_service(self):
+        """Initialize auth-specific client"""
+        self.auth = self.raw.auth  # Gets the GoTrue client
+        self.admin_auth = self.raw.auth.admin  # For admin operations
 
     def create_user(
-        self, email: str, password: str, user_metadata: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
+        self, email: str, password: str, user_metadata: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         """
         Create a new user with email and password.
 
@@ -37,7 +41,7 @@ class SupabaseAuthService(SupabaseService):
             method="POST", endpoint="/auth/v1/admin/users", is_admin=True, data=data
         )
 
-    def create_anonymous_user(self) -> Dict[str, Any]:
+    def create_anonymous_user(self) -> dict[str, Any]:
         """
         Create an anonymous user.
 
@@ -48,7 +52,7 @@ class SupabaseAuthService(SupabaseService):
 
     def sign_in_with_email(
         self, email: str, password: str, is_admin: bool = False
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Sign in a user with email and password.
 
@@ -67,7 +71,7 @@ class SupabaseAuthService(SupabaseService):
             is_admin=is_admin,
         )
 
-    def sign_in_with_id_token(self, provider: str, id_token: str) -> Dict[str, Any]:
+    def sign_in_with_id_token(self, provider: str, id_token: str) -> dict[str, Any]:
         """
         Sign in a user with an ID token from a third-party provider.
 
@@ -84,7 +88,7 @@ class SupabaseAuthService(SupabaseService):
             data={"provider": provider, "id_token": id_token},
         )
 
-    def sign_in_with_otp(self, email: str) -> Dict[str, Any]:
+    def sign_in_with_otp(self, email: str) -> dict[str, Any]:
         """
         Send a one-time password to the user's email.
 
@@ -98,7 +102,7 @@ class SupabaseAuthService(SupabaseService):
             method="POST", endpoint="/auth/v1/otp", data={"email": email}
         )
 
-    def verify_otp(self, email: str, token: str, type: str = "email") -> Dict[str, Any]:
+    def verify_otp(self, email: str, token: str, type: str = "email") -> dict[str, Any]:
         """
         Verify a one-time password and log in the user.
 
@@ -116,7 +120,7 @@ class SupabaseAuthService(SupabaseService):
             data={"email": email, "token": token, "type": type},
         )
 
-    def sign_in_with_oauth(self, provider: str, redirect_url: str) -> Dict[str, Any]:
+    def sign_in_with_oauth(self, provider: str, redirect_url: str) -> dict[str, Any]:
         """
         Get the URL to redirect the user for OAuth sign-in.
 
@@ -133,7 +137,7 @@ class SupabaseAuthService(SupabaseService):
             data={"redirect_to": redirect_url},
         )
 
-    def sign_in_with_sso(self, domain: str, redirect_url: str) -> Dict[str, Any]:
+    def sign_in_with_sso(self, domain: str, redirect_url: str) -> dict[str, Any]:
         """
         Sign in a user through SSO with a domain.
 
@@ -150,7 +154,7 @@ class SupabaseAuthService(SupabaseService):
             data={"domain": domain, "redirect_to": redirect_url},
         )
 
-    def sign_out(self, auth_token: str) -> Dict[str, Any]:
+    def sign_out(self, auth_token: str) -> dict[str, Any]:
         """
         Sign out a user.
 
@@ -165,8 +169,8 @@ class SupabaseAuthService(SupabaseService):
         )
 
     def reset_password(
-        self, email: str, redirect_url: Optional[str] = None, is_admin: bool = False
-    ) -> Dict[str, Any]:
+        self, email: str, redirect_url: str | None = None, is_admin: bool = False
+    ) -> dict[str, Any]:
         """
         Send a password reset email to the user.
 
@@ -184,7 +188,7 @@ class SupabaseAuthService(SupabaseService):
 
         return self._make_request(method="POST", endpoint="/auth/v1/recover", data=data, is_admin=is_admin)
 
-    def get_session(self, auth_token: str) -> Dict[str, Any]:
+    def get_session(self, auth_token: str) -> dict[str, Any]:
         """
         Retrieve the user's session.
 
@@ -198,7 +202,7 @@ class SupabaseAuthService(SupabaseService):
             method="GET", endpoint="/auth/v1/user", auth_token=auth_token
         )
 
-    def refresh_session(self, refresh_token: str) -> Dict[str, Any]:
+    def refresh_session(self, refresh_token: str) -> dict[str, Any]:
         """
         Refresh the user's session with a refresh token.
 
@@ -214,7 +218,7 @@ class SupabaseAuthService(SupabaseService):
             data={"refresh_token": refresh_token},
         )
 
-    def get_user(self, user_id: str) -> Dict[str, Any]:
+    def get_user(self, user_id: str) -> dict[str, Any]:
         """
         Retrieve a user by ID (admin only).
 
@@ -228,7 +232,7 @@ class SupabaseAuthService(SupabaseService):
             method="GET", endpoint=f"/auth/v1/admin/users/{user_id}", is_admin=True
         )
 
-    def update_user(self, user_id: str, user_data: Dict[str, Any]) -> Dict[str, Any]:
+    def update_user(self, user_id: str, user_data: dict[str, Any]) -> dict[str, Any]:
         """
         Update a user's data (admin only).
 
@@ -246,7 +250,7 @@ class SupabaseAuthService(SupabaseService):
             data=user_data,
         )
 
-    def get_user_identities(self, user_id: str) -> List[Dict[str, Any]]:
+    def get_user_identities(self, user_id: str) -> list[dict[str, Any]]:
         """
         Retrieve identities linked to a user (admin only).
 
@@ -254,14 +258,14 @@ class SupabaseAuthService(SupabaseService):
             user_id: User's ID
 
         Returns:
-            List of identities
+            list of identities
         """
         user = self.get_user(user_id)
         return user.get("identities", [])
 
     def link_identity(
         self, auth_token: str, provider: str, redirect_url: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Link an identity to a user.
 
@@ -280,7 +284,7 @@ class SupabaseAuthService(SupabaseService):
             data={"redirect_to": redirect_url},
         )
 
-    def unlink_identity(self, auth_token: str, identity_id: str) -> Dict[str, Any]:
+    def unlink_identity(self, auth_token: str, identity_id: str) -> dict[str, Any]:
         """
         Unlink an identity from a user.
 
@@ -297,7 +301,7 @@ class SupabaseAuthService(SupabaseService):
             auth_token=auth_token,
         )
 
-    def set_session_data(self, auth_token: str, data: Dict[str, Any]) -> Dict[str, Any]:
+    def set_session_data(self, auth_token: str, data: dict[str, Any]) -> dict[str, Any]:
         """
         Set the session data.
 
@@ -315,7 +319,7 @@ class SupabaseAuthService(SupabaseService):
             data={"data": data},
         )
 
-    def get_user_by_token(self, token: str) -> Dict[str, Any]:
+    def get_user_by_token(self, token: str) -> dict[str, Any]:
         """
         Get user information from a JWT token.
 
@@ -335,7 +339,7 @@ class SupabaseAuthService(SupabaseService):
     # MFA methods
     def enroll_mfa_factor(
         self, auth_token: str, factor_type: str = "totp"
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Enroll a multi-factor authentication factor.
 
@@ -353,7 +357,7 @@ class SupabaseAuthService(SupabaseService):
             data={"factor_type": factor_type},
         )
 
-    def create_mfa_challenge(self, auth_token: str, factor_id: str) -> Dict[str, Any]:
+    def create_mfa_challenge(self, auth_token: str, factor_id: str) -> dict[str, Any]:
         """
         Create a multi-factor authentication challenge.
 
@@ -373,7 +377,7 @@ class SupabaseAuthService(SupabaseService):
 
     def verify_mfa_challenge(
         self, auth_token: str, factor_id: str, challenge_id: str, code: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Verify a multi-factor authentication challenge.
 
@@ -393,7 +397,7 @@ class SupabaseAuthService(SupabaseService):
             data={"factor_id": factor_id, "challenge_id": challenge_id, "code": code},
         )
 
-    def unenroll_mfa_factor(self, auth_token: str, factor_id: str) -> Dict[str, Any]:
+    def unenroll_mfa_factor(self, auth_token: str, factor_id: str) -> dict[str, Any]:
         """
         Unenroll a multi-factor authentication factor.
 
@@ -410,16 +414,16 @@ class SupabaseAuthService(SupabaseService):
             auth_token=auth_token,
         )
 
-    def list_users(self, page: int = 1, per_page: int = 50) -> Dict[str, Any]:
+    def list_users(self, page: int = 1, per_page: int = 50) -> dict[str, Any]:
         """
-        List all users (admin only).
+        list all users (admin only).
 
         Args:
             page: Page number for pagination
             per_page: Number of users per page
 
         Returns:
-            List of users
+            list of users
         """
         return self._make_request(
             method="GET",
@@ -431,9 +435,9 @@ class SupabaseAuthService(SupabaseService):
         self,
         email: str,
         password: str,
-        user_metadata: Optional[Dict[str, Any]] = None,
+        user_metadata: dict[str, Any] | None = None,
         email_confirm: bool = False,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Create a new user with admin privileges (bypassing email verification if needed).
 
