@@ -4,7 +4,7 @@ from unittest.mock import patch, ANY
 
 import pytest
 
-from apps.supabase_home.edge_functions import SupabaseEdgeFunctionsService
+from app.core.third_party_integrations.supabase_home.edge_functions import SupabaseEdgeFunctionsService
 
 
 class TestSupabaseEdgeFunctionsService:

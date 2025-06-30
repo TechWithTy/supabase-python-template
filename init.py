@@ -1,7 +1,7 @@
-from django.conf import settings
 import logging
 import sys
-from backend.utils.sensitive import load_environment_files
+# Import the environment file loader
+from app.core.utils.sensitive import load_environment_files
 import os
 
 # Load environment variables

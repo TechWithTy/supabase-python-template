@@ -1,8 +1,8 @@
 import json
 from typing import Any, Dict, Optional
+import os
 
 import requests
-from django.conf import settings
 import logging
 
 logger = logging.getLogger(" apps.supabase_home")
@@ -44,23 +44,23 @@ class SupabaseService:
     """
 
     def __init__(self):
-        # Get configuration from settings
-        self.base_url = settings.SUPABASE_URL
-        self.anon_key = settings.SUPABASE_ANON_KEY
-        self.service_role_key = settings.SUPABASE_SERVICE_ROLE_KEY
+        # Get configuration from environment variables
+        self.base_url = os.getenv("SUPABASE_URL", "")
+        self.anon_key = os.getenv("SUPABASE_ANON_KEY", "")
+        self.service_role_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
 
         # Validate required settings
         if not self.base_url:
-            logger.error("SUPABASE_URL is not set in settings")
-            raise ValueError("SUPABASE_URL is not set in settings")
+            logger.error("SUPABASE_URL is not set in environment variables")
+            raise ValueError("SUPABASE_URL is not set in environment variables")
 
         if not self.anon_key:
-            logger.error("SUPABASE_ANON_KEY is not set in settings")
-            raise ValueError("SUPABASE_ANON_KEY is not set in settings")
+            logger.error("SUPABASE_ANON_KEY is not set in environment variables")
+            raise ValueError("SUPABASE_ANON_KEY is not set in environment variables")
 
         if not self.service_role_key:
             logger.warning(
-                "SUPABASE_SERVICE_ROLE_KEY is not set in settings. Admin operations will not work."
+                "SUPABASE_SERVICE_ROLE_KEY is not set in environment variables. Admin operations will not work."
             )
 
     def _get_headers(
