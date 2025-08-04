@@ -2,7 +2,7 @@ import pytest
 import requests
 import os
 
-from apps.supabase_home._service import SupabaseService, SupabaseAPIError, SupabaseError
+from app.core.third_party_integrations.supabase_home._service import SupabaseService, SupabaseAPIError, SupabaseError
 
 
 

@@ -7,9 +7,9 @@ from utils.sensitive import load_environment_files
 from django.conf import settings
 
 # Import the service classes from their respective modules
-from apps.supabase_home.auth import SupabaseAuthService
-from apps.supabase_home.storage import SupabaseStorageService
-from apps.supabase_home.database import SupabaseDatabaseService
+from app.core.third_party_integrations.supabase_home.auth import SupabaseAuthService
+from app.core.third_party_integrations.supabase_home.storage import SupabaseStorageService
+from app.core.third_party_integrations.supabase_home.database import SupabaseDatabaseService
 
 # Load environment variables for tests
 load_environment_files()

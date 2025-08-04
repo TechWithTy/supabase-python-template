@@ -1,7 +1,7 @@
-from django.conf import settings
 import logging
 import sys
-from backend.utils.sensitive import load_environment_files
+# Import the environment file loader
+from app.core.utils.sensitive import load_environment_files
 import os
 
 # Load environment variables
@@ -53,7 +53,8 @@ def initialize_supabase() -> Client:
 
     # Check for required environment variables
     supabase_url = os.getenv("SUPABASE_URL")
-    supabase_key = os.getenv("SUPABASE_ANON_KEY")
+    # Use service role key for backend operations to bypass RLS
+    supabase_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY") or os.getenv("SUPABASE_ANON_KEY")
 
     print(f"Supabase URL: {supabase_url}")  # Added print statement to show the URL
 
@@ -63,7 +64,7 @@ def initialize_supabase() -> Client:
         raise ValueError(error_msg)
 
     if not supabase_key:
-        error_msg = "SUPABASE_ANON_KEY is not set in environment variables"
+        error_msg = "SUPABASE_SERVICE_ROLE_KEY or SUPABASE_ANON_KEY is not set in environment variables"
         logger.error(error_msg)
         raise ValueError(error_msg)
 
