@@ -2,6 +2,8 @@ from typing import Any, Dict, List, Optional, Union
 
 from ._service import SupabaseService
 
+from ._service import SupabaseService
+
 class SupabaseDatabaseService(SupabaseService):
     """
     Service for interacting with Supabase Database (PostgreSQL) API.
@@ -17,7 +19,8 @@ class SupabaseDatabaseService(SupabaseService):
                   filters: Optional[Dict[str, Any]] = None,
                   order: Optional[str] = None,
                   limit: Optional[int] = None,
-                  offset: Optional[int] = None) -> List[Dict[str, Any]]:
+                  offset: Optional[int] = None,
+                  is_admin: bool = False) -> List[Dict[str, Any]]:
         """
         Fetch data from a table with optional filtering, ordering, and pagination.
         
@@ -56,6 +59,7 @@ class SupabaseDatabaseService(SupabaseService):
             method="GET",
             endpoint=endpoint,
             auth_token=auth_token,
+            is_admin=is_admin,
             params=params,
             headers={"Prefer": "return=representation"}
         )
@@ -64,7 +68,8 @@ class SupabaseDatabaseService(SupabaseService):
                    table: str, 
                    data: Union[Dict[str, Any], List[Dict[str, Any]]], 
                    auth_token: Optional[str] = None,
-                   upsert: bool = False) -> List[Dict[str, Any]]:
+                   upsert: bool = False,
+                   is_admin: bool = False) -> List[Dict[str, Any]]:
         """
         Insert data into a table.
         
@@ -73,6 +78,7 @@ class SupabaseDatabaseService(SupabaseService):
             data: Data to insert (single record or list of records)
             auth_token: Optional JWT token for authenticated requests
             upsert: Whether to upsert (update on conflict)
+            is_admin: Whether to use service role key (bypasses RLS)
             
         Returns:
             Inserted data
@@ -87,6 +93,7 @@ class SupabaseDatabaseService(SupabaseService):
             method="POST",
             endpoint=endpoint,
             auth_token=auth_token,
+            is_admin=is_admin,
             data=data,
             headers=headers
         )
@@ -95,7 +102,8 @@ class SupabaseDatabaseService(SupabaseService):
                    table: str, 
                    data: Dict[str, Any], 
                    filters: Dict[str, Any],
-                   auth_token: Optional[str] = None) -> List[Dict[str, Any]]:
+                   auth_token: Optional[str] = None,
+                   is_admin: bool = False) -> List[Dict[str, Any]]:
         """
         Update data in a table.
         
@@ -120,6 +128,7 @@ class SupabaseDatabaseService(SupabaseService):
             method="PATCH",
             endpoint=endpoint,
             auth_token=auth_token,
+            is_admin=is_admin,  # Pass the is_admin parameter to use service role key
             data=data,
             params=params,
             headers={"Prefer": "return=representation"}
@@ -128,7 +137,8 @@ class SupabaseDatabaseService(SupabaseService):
     def upsert_data(self, 
                    table: str, 
                    data: Union[Dict[str, Any], List[Dict[str, Any]]], 
-                   auth_token: Optional[str] = None) -> List[Dict[str, Any]]:
+                   auth_token: Optional[str] = None,
+                   is_admin: bool = False) -> List[Dict[str, Any]]:
         """
         Upsert data in a table (insert or update).
         
@@ -140,12 +150,13 @@ class SupabaseDatabaseService(SupabaseService):
         Returns:
             Upserted data
         """
-        return self.insert_data(table, data, auth_token, upsert=True)
+        return self.insert_data(table, data, auth_token, upsert=True, is_admin=is_admin)
     
     def delete_data(self, 
                    table: str, 
                    filters: Dict[str, Any],
-                   auth_token: Optional[str] = None) -> List[Dict[str, Any]]:
+                   auth_token: Optional[str] = None,
+                   is_admin: bool = False) -> List[Dict[str, Any]]:
         """
         Delete data from a table.
         
@@ -169,6 +180,7 @@ class SupabaseDatabaseService(SupabaseService):
             method="DELETE",
             endpoint=endpoint,
             auth_token=auth_token,
+            is_admin=is_admin,  # Pass the is_admin parameter to use service role key
             params=params,
             headers={"Prefer": "return=representation"}
         )

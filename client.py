@@ -84,6 +84,18 @@ class SupabaseClient:
             supabase.Client instance
         """
         return self._raw_client
+    
+    def table(self, table_name: str):
+        """
+        Delegate table access to the raw client for compatibility.
+        
+        Args:
+            table_name: Name of the table
+            
+        Returns:
+            Table query builder from raw client
+        """
+        return self._raw_client.table(table_name)
 
 # Create a singleton instance
 supabase = SupabaseClient()
