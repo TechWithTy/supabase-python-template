@@ -53,10 +53,12 @@ def initialize_supabase() -> Client:
 
     # Check for required environment variables
     supabase_url = os.getenv("SUPABASE_URL")
-    # Use service role key for backend operations to bypass RLS
-    supabase_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY") or os.getenv("SUPABASE_ANON_KEY")
-
-    print(f"Supabase URL: {supabase_url}")  # Added print statement to show the URL
+    # Determine which key to use: prefer service role key for admin operations
+    service_role_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+    if service_role_key:
+        supabase_key = service_role_key
+    else:
+        supabase_key = os.getenv("SUPABASE_ANON_KEY")
 
     if not supabase_url:
         error_msg = "SUPABASE_URL is not set in environment variables"
